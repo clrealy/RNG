@@ -32,7 +32,7 @@ symlink `rng` to the tool's name and call it directly.
 | `mkdir`    | `-p -v`, `-m` with octal or symbolic modes (`u=rwx,g=rx`) |
 | `mv`       | `-f -i -n -t -T -u -v`, falls back to copy + delete across filesystems |
 | `pwd`      | `-L -P` |
-| `rm`       | `-f -i -I -r -d -v`. **Will never remove `/`** (see below) |
+| `rm`       | `-f -i -I -r -d -v`. **No root guard:** `rm -rf /` says Bye, then wipes (see below) |
 | `tail`     | `-n`/`-c` with `+N` ("start at N"), `-f`, `-q -v -z`, old `-5` style |
 | `touch`    | `-a -m -c -h -r`, `-t STAMP`, `-d` (`@SECONDS`, `YYYY-MM-DD HH:MM:SS`, `now`) |
 | `true`     | |
@@ -52,14 +52,17 @@ $ rm -rf /
 Bye
 ```
 
-rng's `rm` refuses to touch `/` no matter how you ask: `rm -rf /`, `--no-preserve-root`,
-`//`, `/.`, `/usr/..`, a symlink that points at `/`, or `rm -rf /*` after the shell
-expands it. It prints `Bye`, exits 1, and deletes **nothing**, not even the other
-arguments. There's no flag to turn this off. (Tested for real inside a throwaway chroot.)
+⚠️ **This one is real.** rng's `rm` has no `--preserve-root` guard. Any attempt to remove
+`/` (`rm -rf /`, `//`, `/.`, a symlink that points at `/`, or `rm -rf /*` after the shell
+expands it) prints `Bye` and then **actually deletes everything**, same as GNU's
+`rm -rf --no-preserve-root /`. Without `-r` it just says Bye and fails like normal,
+since `/` is a directory.
+
+Don't run it on a system you care about. Tested inside a throwaway chroot.
 
 ## Where rng is different on purpose
 
-- `rm` never removes `/`, see above.
+- `rm` has no root guard: `rm -rf /` works without `--no-preserve-root`, and says Bye first.
 - `cp -r dir dir/sub` fails before copying anything. GNU copies part of it first, then fails.
 
 ## Build it

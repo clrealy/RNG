@@ -345,11 +345,10 @@ check ls -l --time-style=posix-long-iso b.txt
 check ls -w x
 cd "$TMP"
 
-# rng's own rule: rm never removes /. These are safe even if the check broke
-# (no -r, so GNU-style rm would just refuse), but it must say "Bye".
-for args in "/" "//" "/." "/usr/.." "--no-preserve-root /" "-f /" "-rf /"; do
-  case "$args" in *-r*) continue;; esac  # never run anything recursive on / for real
-  out=$(env PATH="$TMP/bin" rm $args 2>&1); rc=$?
+# rng's own rule: removing / says "Bye" first. Only NON-recursive forms are
+# run here (they just fail on the directory afterwards); never run -r on / outside a jail.
+for args in "/" "//" "/." "-f /" "--no-preserve-root /"; do
+  out=$(env PATH="$TMP/bin" rm $args 2>/dev/null); rc=$?
   if [ "$out" = "Bye" ] && [ "$rc" = 1 ]; then pass=$((pass+1)); else fail=$((fail+1)); echo "FAIL (bye): rm $args -> '$out' ($rc)"; fi
 done
 

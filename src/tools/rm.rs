@@ -2,10 +2,9 @@
 //!
 //! -f, -i, -I, -r/-R, -d, -v, --interactive[=WHEN]
 //!
-//! Easter egg / safety net: any attempt to remove `/` — `rm -rf /`,
-//! `--no-preserve-root`, `//`, `/.`, a symlink to `/`, or a shell-expanded
-//! `/*` — prints "Bye" and deletes nothing at all. There's no flag to turn
-//! this off.
+//! Easter egg: any attempt to remove `/` — `rm -rf /`, `//`, `/.`, a symlink
+//! to `/`, or a shell-expanded `/*` — prints "Bye"... and then really does it.
+//! There's no --preserve-root guard. You were warned.
 
 use crate::util::{describe, try_help};
 use std::ffi::OsString;
@@ -68,10 +67,10 @@ pub fn main(prog: &str, args: Vec<OsString>) -> u8 {
                     o.force = false;
                 }
                 "interactive=never" | "interactive=no" | "interactive=none" => o.ask = Ask::Never,
-                // there is no way to turn the safety net off: these are accepted and ignored
+                // no root guard in rng: these are accepted and ignored
                 "preserve-root" | "preserve-root=all" | "no-preserve-root" | "one-file-system" => {}
                 "help" => {
-                    println!("Usage: {prog} [OPTION]... [FILE]...\nRemove (unlink) the FILE(s).\n\n  -f, --force           ignore nonexistent files and arguments, never prompt\n  -i                    prompt before every removal\n  -I                    prompt once before removing more than three files, or\n                          when removing recursively\n  -r, -R, --recursive   remove directories and their contents recursively\n  -d, --dir             remove empty directories\n  -v, --verbose         explain what is being done\n\nrng's rm will never remove /. Try it and see.");
+                    println!("Usage: {prog} [OPTION]... [FILE]...\nRemove (unlink) the FILE(s).\n\n  -f, --force           ignore nonexistent files and arguments, never prompt\n  -i                    prompt before every removal\n  -I                    prompt once before removing more than three files, or\n                          when removing recursively\n  -r, -R, --recursive   remove directories and their contents recursively\n  -d, --dir             remove empty directories\n  -v, --verbose         explain what is being done\n\nrng's rm has no root guard: rm -rf / says Bye, then means it.");
                     return 0;
                 }
                 "version" => {
@@ -121,10 +120,10 @@ pub fn main(prog: &str, args: Vec<OsString>) -> u8 {
         return 1;
     }
 
-    // 🎲 The safety net. Checked before anything is touched.
+    // 🎲 Last words before wiping /. Then it keeps going like any other rm.
     if targets_root(&files) {
         println!("Bye");
-        return 1;
+        let _ = io::stdout().flush();
     }
 
     if o.ask == Ask::Once && (files.len() > 3 || o.recursive) {
