@@ -23,19 +23,44 @@ symlink `rng` to the tool's name and call it directly.
 |------------|-------|
 | `basename` | `-a -s -z`, `NAME SUFFIX` form |
 | `cat`      | every GNU flag: `-A -b -e -E -n -s -t -T -u -v` + long forms |
+| `cp`       | `-a -d -f -i -l -L -n -p -P -r -s -t -T -u -v`, `--preserve=…`, keeps hard links together |
 | `dirname`  | `-z`, any number of names |
 | `echo`     | `-n -e -E`, every GNU escape (`\c`, `\0NNN`, `\xHH`…) |
 | `false`    | |
 | `head`     | `-n`/`-c` with `-N` ("all but the last N"), `-q -v -z`, old `-5` style, size suffixes |
+| `ls`       | `-a -A -l -h -1 -C -x -m -R -d -t -S -X -r -U -F -p -i -s -n -g -o -G -u -c -L -q -N -w -T`, colors, `--time-style`, `--group-directories-first` |
+| `mkdir`    | `-p -v`, `-m` with octal or symbolic modes (`u=rwx,g=rx`) |
+| `mv`       | `-f -i -n -t -T -u -v`, falls back to copy + delete across filesystems |
 | `pwd`      | `-L -P` |
+| `rm`       | `-f -i -I -r -d -v`. **Will never remove `/`** (see below) |
 | `tail`     | `-n`/`-c` with `+N` ("start at N"), `-f`, `-q -v -z`, old `-5` style |
+| `touch`    | `-a -m -c -h -r`, `-t STAMP`, `-d` (`@SECONDS`, `YYYY-MM-DD HH:MM:SS`, `now`) |
 | `true`     | |
 | `wc`       | `-l -w -c -m -L`, same column widths as GNU |
 | `yes`      | as fast as GNU's |
 
-Every tool is checked against GNU in both the C and UTF-8 locales (99/99 matching).
+Every tool is checked against GNU in both the C and UTF-8 locales (228/228 matching):
+output, error messages, exit codes, and for `cp`/`mv`/`rm`/`mkdir`/`touch` the resulting
+file tree too.
 
-Next up: `mkdir`, `touch`, `rm`, `cp`, `mv`, `ls`.
+Next up: `chmod`, `chown`, `ln`, `cut`, `sort`, `uniq`, `tr`.
+
+## rm and `/`
+
+```console
+$ rm -rf /
+Bye
+```
+
+rng's `rm` refuses to touch `/` no matter how you ask: `rm -rf /`, `--no-preserve-root`,
+`//`, `/.`, `/usr/..`, a symlink that points at `/`, or `rm -rf /*` after the shell
+expands it. It prints `Bye`, exits 1, and deletes **nothing**, not even the other
+arguments. There's no flag to turn this off. (Tested for real inside a throwaway chroot.)
+
+## Where rng is different on purpose
+
+- `rm` never removes `/`, see above.
+- `cp -r dir dir/sub` fails before copying anything. GNU copies part of it first, then fails.
 
 ## Build it
 

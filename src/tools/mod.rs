@@ -2,9 +2,14 @@ use std::ffi::OsString;
 
 mod basename;
 mod cat;
+mod cp;
 mod echo;
 mod headtail;
+mod ls;
+mod mkdir;
 mod pwd;
+mod rm;
+mod touch;
 mod truefalse;
 mod wc;
 mod yes;
@@ -36,6 +41,11 @@ pub const ALL: &[Tool] = &[
         main: cat::main,
     },
     Tool {
+        name: "cp",
+        about: "copy files and directories",
+        main: cp::main_cp,
+    },
+    Tool {
         name: "dirname",
         about: "strip the last part from a path",
         main: basename::main_dirname,
@@ -56,14 +66,39 @@ pub const ALL: &[Tool] = &[
         main: headtail::main_head,
     },
     Tool {
+        name: "ls",
+        about: "list directory contents",
+        main: ls::main,
+    },
+    Tool {
+        name: "mkdir",
+        about: "make directories",
+        main: mkdir::main,
+    },
+    Tool {
+        name: "mv",
+        about: "move (rename) files",
+        main: cp::main_mv,
+    },
+    Tool {
         name: "pwd",
         about: "print the current directory",
         main: pwd::main,
     },
     Tool {
+        name: "rm",
+        about: "remove files or directories (never /)",
+        main: rm::main,
+    },
+    Tool {
         name: "tail",
         about: "print the last part of files",
         main: headtail::main_tail,
+    },
+    Tool {
+        name: "touch",
+        about: "change file timestamps",
+        main: touch::main,
     },
     Tool {
         name: "true",

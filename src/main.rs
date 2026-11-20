@@ -4,6 +4,7 @@
 //! `rng <tool> [args...]` or through a symlink named after the tool
 //! (e.g. `ln -s rng cat`, then `./cat file.txt`).
 
+mod mode;
 mod tools;
 mod util;
 
