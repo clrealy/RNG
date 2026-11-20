@@ -5,6 +5,7 @@
 //! (e.g. `ln -s rng cat`, then `./cat file.txt`).
 
 mod tools;
+mod util;
 
 use std::ffi::OsString;
 use std::path::Path;

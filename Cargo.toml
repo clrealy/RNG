@@ -3,7 +3,7 @@ name = "rng"
 version = "0.1.0"
 edition = "2021"
 description = "RNG's Not GNU!!! — a from-scratch remake of the GNU userland in Rust"
-license-file = "License.txt"
+license-file = "LICENSE"
 readme = "README.md"
 repository = "https://github.com/clrealy/RNG"
 

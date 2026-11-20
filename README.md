@@ -19,14 +19,23 @@ symlink `rng` to the tool's name and call it directly.
 
 ## Tools so far
 
-| Tool    | Status | Notes |
-|---------|--------|-------|
-| `cat`   | ✅     | all GNU flags: `-A -b -e -E -n -s -t -T -u -v` + long forms |
-| `echo`  | ✅     | `-n -e -E`, every GNU escape (`\c`, `\0NNN`, `\xHH`…) |
-| `true`  | ✅     | |
-| `false` | ✅     | |
+| Tool       | Notes |
+|------------|-------|
+| `basename` | `-a -s -z`, `NAME SUFFIX` form |
+| `cat`      | every GNU flag: `-A -b -e -E -n -s -t -T -u -v` + long forms |
+| `dirname`  | `-z`, any number of names |
+| `echo`     | `-n -e -E`, every GNU escape (`\c`, `\0NNN`, `\xHH`…) |
+| `false`    | |
+| `head`     | `-n`/`-c` with `-N` ("all but the last N"), `-q -v -z`, old `-5` style, size suffixes |
+| `pwd`      | `-L -P` |
+| `tail`     | `-n`/`-c` with `+N` ("start at N"), `-f`, `-q -v -z`, old `-5` style |
+| `true`     | |
+| `wc`       | `-l -w -c -m -L`, same column widths as GNU |
+| `yes`      | as fast as GNU's |
 
-Next up: `yes`, `pwd`, `basename`, `dirname`, `head`, `tail`, `wc`.
+Every tool is checked against GNU in both the C and UTF-8 locales (99/99 matching).
+
+Next up: `mkdir`, `touch`, `rm`, `cp`, `mv`, `ls`.
 
 ## Build it
 
@@ -57,6 +66,7 @@ stdout, stderr and the exit code all match.
 
 ```sh
 cargo build --release && sh tests/gnu-compat.sh
+LC_ALL=C.UTF-8 sh tests/gnu-compat.sh   # GNU changes some quotes in UTF-8
 ```
 
 Every new tool or flag gets a line in `tests/gnu-compat.sh`. If GNU and RNG disagree,
@@ -72,7 +82,7 @@ Don't read GNU's source while writing a tool. It's GPL, and this project isn't.
 
 ## License
 
-[RNG Roller License (RRL) v1.0](License.txt). Do whatever you want, just give credit,
+[RNG Roller License (RRL) v1.0](LICENSE). Do whatever you want, just give credit,
 and don't close-source it (you're allowed, but why the hell would you?).
 
 Roll the dice. Don't die. Ok?

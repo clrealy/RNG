@@ -4,6 +4,7 @@
 //! combined short flags (`-nE`), `-` for stdin, and `--` to end options.
 //! Line numbering carries on across files, like GNU.
 
+use crate::util::describe;
 use std::ffi::OsString;
 use std::fs::File;
 use std::io::{self, BufRead, BufReader, BufWriter, Read, Write};
@@ -178,15 +179,6 @@ pub fn main(prog: &str, args: Vec<OsString>) -> u8 {
         }
     }
     code
-}
-
-/// GNU-style error text ("No such file or directory", not "... (os error 2)").
-fn describe(e: &io::Error) -> String {
-    let s = e.to_string();
-    match s.find(" (os error") {
-        Some(i) => s[..i].to_string(),
-        None => s,
-    }
 }
 
 fn copy<R: Read, W: Write>(src: R, out: &mut W, o: Opts, st: &mut State) -> io::Result<()> {
