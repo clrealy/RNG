@@ -63,8 +63,7 @@ Bye
 ⚠️ **This one is real.** rng's `rm` has no `--preserve-root` guard. Any attempt to remove
 `/` (`rm -rf /`, `//`, `/.`, a symlink that points at `/`, or `rm -rf /*` after the shell
 expands it) prints `Bye` and then **actually deletes everything**, same as GNU's
-`rm -rf --no-preserve-root /`. Without `-r` it just says Bye and fails like normal,
-since `/` is a directory.
+`rm -rf --no-preserve-root /`. You know what it does
 
 Don't run it on a system you care about. Tested inside a throwaway chroot.
 
