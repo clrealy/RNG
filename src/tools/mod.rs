@@ -2,15 +2,22 @@ use std::ffi::OsString;
 
 mod basename;
 mod cat;
+mod chmod;
+mod chown;
 mod cp;
+mod cut;
 mod echo;
 mod headtail;
+mod ln;
 mod ls;
 mod mkdir;
 mod pwd;
 mod rm;
+mod sort;
 mod touch;
+mod tr;
 mod truefalse;
+mod uniq;
 mod wc;
 mod yes;
 
@@ -41,9 +48,29 @@ pub const ALL: &[Tool] = &[
         main: cat::main,
     },
     Tool {
+        name: "chgrp",
+        about: "change group ownership",
+        main: chown::main_chgrp,
+    },
+    Tool {
+        name: "chmod",
+        about: "change file mode bits",
+        main: chmod::main,
+    },
+    Tool {
+        name: "chown",
+        about: "change file owner and group",
+        main: chown::main_chown,
+    },
+    Tool {
         name: "cp",
         about: "copy files and directories",
         main: cp::main_cp,
+    },
+    Tool {
+        name: "cut",
+        about: "print selected parts of lines",
+        main: cut::main,
     },
     Tool {
         name: "dirname",
@@ -64,6 +91,11 @@ pub const ALL: &[Tool] = &[
         name: "head",
         about: "print the first part of files",
         main: headtail::main_head,
+    },
+    Tool {
+        name: "ln",
+        about: "make links between files",
+        main: ln::main,
     },
     Tool {
         name: "ls",
@@ -87,8 +119,13 @@ pub const ALL: &[Tool] = &[
     },
     Tool {
         name: "rm",
-        about: "remove files or directories (never /)",
+        about: "remove files or directories (rm -rf / says Bye)",
         main: rm::main,
+    },
+    Tool {
+        name: "sort",
+        about: "sort lines of text",
+        main: sort::main,
     },
     Tool {
         name: "tail",
@@ -101,9 +138,19 @@ pub const ALL: &[Tool] = &[
         main: touch::main,
     },
     Tool {
+        name: "tr",
+        about: "translate or delete characters",
+        main: tr::main,
+    },
+    Tool {
         name: "true",
         about: "do nothing, successfully",
         main: truefalse::main_true,
+    },
+    Tool {
+        name: "uniq",
+        about: "report or omit repeated lines",
+        main: uniq::main,
     },
     Tool {
         name: "wc",

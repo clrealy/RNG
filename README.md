@@ -23,27 +23,35 @@ symlink `rng` to the tool's name and call it directly.
 |------------|-------|
 | `basename` | `-a -s -z`, `NAME SUFFIX` form |
 | `cat`      | every GNU flag: `-A -b -e -E -n -s -t -T -u -v` + long forms |
+| `chgrp`    | `-R -v -c -f -h`, `--reference` |
+| `chmod`    | `-R -v -c -f`, `--reference`, octal or symbolic, `chmod -w file` works, warns when umask blocks bits |
+| `chown`    | `OWNER[:GROUP]`, `OWNER:`, `:GROUP`, numeric ids, `-R -v -c -f -h`, `--reference` |
 | `cp`       | `-a -d -f -i -l -L -n -p -P -r -s -t -T -u -v`, `--preserve=…`, keeps hard links together |
+| `cut`      | `-b -c -f -d -s -z`, `--complement`, `--output-delimiter` |
 | `dirname`  | `-z`, any number of names |
 | `echo`     | `-n -e -E`, every GNU escape (`\c`, `\0NNN`, `\xHH`…) |
 | `false`    | |
 | `head`     | `-n`/`-c` with `-N` ("all but the last N"), `-q -v -z`, old `-5` style, size suffixes |
+| `ln`       | `-s -f -n -r -v -t -T -L -P` |
 | `ls`       | `-a -A -l -h -1 -C -x -m -R -d -t -S -X -r -U -F -p -i -s -n -g -o -G -u -c -L -q -N -w -T`, colors, `--time-style`, `--group-directories-first` |
 | `mkdir`    | `-p -v`, `-m` with octal or symbolic modes (`u=rwx,g=rx`) |
 | `mv`       | `-f -i -n -t -T -u -v`, falls back to copy + delete across filesystems |
 | `pwd`      | `-L -P` |
 | `rm`       | `-f -i -I -r -d -v`. **No root guard:** `rm -rf /` says Bye, then wipes (see below) |
+| `sort`     | `-k` keys, `-t`, `-n -h -g -M -V -f -d -i -b -r -u -s -c -C -o -z`, locale collation |
 | `tail`     | `-n`/`-c` with `+N` ("start at N"), `-f`, `-q -v -z`, old `-5` style |
 | `touch`    | `-a -m -c -h -r`, `-t STAMP`, `-d` (`@SECONDS`, `YYYY-MM-DD HH:MM:SS`, `now`) |
+| `tr`       | `-c -d -s -t`, ranges, `[:classes:]`, `[c*n]`, octal escapes |
 | `true`     | |
+| `uniq`     | `-c -d -D -u -i -f -s -w -z` |
 | `wc`       | `-l -w -c -m -L`, same column widths as GNU |
 | `yes`      | as fast as GNU's |
 
-Every tool is checked against GNU in both the C and UTF-8 locales (228/228 matching):
+Every tool is checked against GNU in both the C and UTF-8 locales (377/377 matching):
 output, error messages, exit codes, and for `cp`/`mv`/`rm`/`mkdir`/`touch` the resulting
 file tree too.
 
-Next up: `chmod`, `chown`, `ln`, `cut`, `sort`, `uniq`, `tr`.
+Next up: `seq`, `printf`, `env`, `date`, `stat`, `du`, `df`, `tee`, `paste`, `comm`, `join`.
 
 ## rm and `/`
 

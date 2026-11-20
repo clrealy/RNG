@@ -345,6 +345,118 @@ check ls -l --time-style=posix-long-iso b.txt
 check ls -w x
 cd "$TMP"
 
+# ---------- chmod / chown / chgrp / ln (file-system checks) ----------
+checkfs chmod 755 f1
+checkfs chmod -v 600 f1 f2
+checkfs chmod -c u+x f1 f2
+checkfs chmod -R go-rwx src
+checkfs chmod -Rv a+rX src
+checkfs chmod g=u src/a.txt
+checkfs chmod -w f1
+checkfs chmod +x f1
+checkfs chmod o+w f1
+checkfs chmod u+s,g+s f1
+checkfs chmod +t src
+checkfs chmod --reference=src/a.txt f1
+checkfs chmod 999 f1
+checkfs chmod bogus f1
+checkfs chmod 755
+checkfs chmod
+checkfs chmod 644 nope
+checkfs chmod -v 755 src/link
+checkfs chown bin f1
+checkfs chown -v bin:daemon f1 f2
+checkfs chown -c :bin f1
+checkfs chown -v bin f1
+checkfs chown -v :root f1
+checkfs chown -v daemon: f1
+checkfs chown -v root:root f1
+checkfs chown bin: f1
+checkfs chown 1:1 f1
+checkfs chown -R daemon src
+checkfs chown -h bin src/link
+checkfs chown nobodyx f1
+checkfs chown root:nogroupx f1
+checkfs chown bin
+checkfs chown --reference=src/a.txt f1
+checkfs chgrp -v bin f1
+checkfs chgrp -R daemon src
+checkfs chgrp nogroupx f1
+checkfs ln f1 hard
+checkfs ln -s f1 soft
+checkfs ln -sv f1 soft
+checkfs ln -v f1 hard2
+checkfs ln -s f1 f2
+checkfs ln -sf f1 f2
+checkfs ln f1 f2
+checkfs ln -f f1 f2
+checkfs ln src hardlinkdir
+checkfs ln nope x
+checkfs ln -s f1 f2 dst
+checkfs ln -t dst f1 f2
+checkfs ln -sr src/a.txt dst/rel
+checkfs ln -sr f1 src/sub/rel
+checkfs ln -s src/a.txt
+checkfs ln
+checkfs ln -r f1 x
+checkfs ln -sfn src/sub src/link
+
+# ---------- cut / uniq / tr / sort ----------
+printf 'a:b:c\none:two:three:four\nno delims here\n:x:\n' > fields.txt
+printf 'name\tage\tcity\nbob\t30\tLima\nann\t25\tOhio\n' > tabs.txt
+printf 'b\na\na\nc\nc\nc\nA\na\n' > dups.txt
+printf '  10 x\n2 y\n-3 z\n1.5 w\n10 a\nabc\n0 q\n-0 r\n1e3 s\n' > nums2.txt
+printf '1K\n2M\n500\n1G\n3K\n-1K\n0\n' > human.txt
+printf 'Mar\nJAN\nfeb\nxyz\nDec\n' > months.txt
+printf 'file10\nfile2\nfile1.5\nv1.9\nv1.10\nfile1\n' > versions.txt
+printf 'b 2 x\na 10 y\nc 1 z\na 2 w\nB 3 v\n' > keys.txt
+printf 'Hello, World!\nfoo  bar   baz\n' > text.txt
+for args in "-d: -f1 fields.txt" "-d: -f2,3 fields.txt" "-d: -f3- fields.txt" "-d: -f-2 fields.txt" \
+  "-d: -s -f2 fields.txt" "-d: --complement -f2 fields.txt" "-d: -f1,3 --output-delimiter=| fields.txt" \
+  "-f2 tabs.txt" "-b1-3 fields.txt" "-c2,4 fields.txt" "-b1,3-4 --output-delimiter=. fields.txt" \
+  "-b3- fields.txt" "--complement -b2 fields.txt" "fields.txt" "-f1 -b2 fields.txt" "-f0 fields.txt" \
+  "-f3-1 fields.txt" "-fx fields.txt" "-d:: -f1 fields.txt" "-b1 -d: fields.txt" "-s -b1 fields.txt" \
+  "-f1 nope.txt"; do
+  check cut $args
+done
+for args in "dups.txt" "-c dups.txt" "-d dups.txt" "-D dups.txt" "-u dups.txt" "-i dups.txt" "-ic dups.txt" \
+  "-f1 keys.txt" "-s1 dups.txt" "-w1 keys.txt" "-cD dups.txt" "nope.txt" "a b c"; do
+  check uniq $args
+done
+checkpipe 'printf "a\na\nb\n" | uniq -c'
+checkpipe 'printf "x y\nz y\n" | uniq -f1'
+checkpipe 'tr a-z A-Z < text.txt'
+checkpipe 'tr "[:lower:]" "[:upper:]" < text.txt'
+checkpipe 'tr -d aeiou < text.txt'
+checkpipe 'tr -s " " < text.txt'
+checkpipe 'tr -cd "[:alpha:]\n" < text.txt'
+checkpipe 'tr -s "a-z" < text.txt'
+checkpipe 'tr -ds "lo" " " < text.txt'
+checkpipe 'tr abc x < text.txt'
+checkpipe 'tr -t abcdef xy < text.txt'
+checkpipe 'tr "a-z" "[x*]" < text.txt'
+checkpipe 'tr "a-c" "[x*2]Y" < text.txt'
+checkpipe 'tr "\n" "\0" < text.txt | od -c'
+checkpipe 'tr "\\101-\\132" "\\141-\\172" < text.txt'
+checkpipe 'tr -c "[:alnum:]" "_" < text.txt'
+check tr
+check tr abc
+check tr -d a b
+check tr z-a x
+check tr a b c
+check tr "[:nope:]" x
+for args in "dups.txt" "-r dups.txt" "-f dups.txt" "-u dups.txt" "-fu dups.txt" "-n nums2.txt" "-rn nums2.txt" \
+  "-g nums2.txt" "-h human.txt" "-M months.txt" "-V versions.txt" "-k2n keys.txt" "-k2,2n keys.txt" \
+  "-k1,1 -k2,2nr keys.txt" "-k3 keys.txt" "-k1.2 keys.txt" "-t: -k2 fields.txt" "-t: -k2,2 -s fields.txt" \
+  "-s -k1,1 keys.txt" "-b -k2 keys.txt" "-d text.txt" "-c dups.txt" "-C dups.txt" "-c human.txt" \
+  "-cu keys.txt" "-un nums2.txt" "-k0 keys.txt" "-kx keys.txt" "-t ab keys.txt" "nope.txt" \
+  "dups.txt keys.txt" "-z dups.txt" "-i text.txt" "-nr -k2 keys.txt" "-k2,2 -k1,1r keys.txt"; do
+  check sort $args
+done
+checkpipe 'sort -o out.txt dups.txt && cat out.txt'
+checkpipe 'printf "3\n1\n2\n" | sort -n'
+checkpipe 'printf "b\nA\na\nB\n" | sort'
+
 # rng's own rule: removing / says "Bye" first. Only NON-recursive forms are
 # run here (they just fail on the directory afterwards); never run -r on / outside a jail.
 for args in "/" "//" "/." "-f /" "--no-preserve-root /"; do
